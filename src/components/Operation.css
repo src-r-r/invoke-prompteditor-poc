@@ -1,0 +1,16 @@
+.operation {
+    display: inline-block;
+}
+
+.operation .title {
+    padding: 4pt;
+    margin: 4pt;
+    text-align: left;
+}
+
+.operation .nuggets {
+    display: inline-flex;
+    background-color: #ffdddd;
+    border: 1px solid coral;
+    border-radius: 10pt;
+}

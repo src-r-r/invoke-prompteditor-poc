@@ -1,26 +1,25 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import PromptArea from './components/PromptArea';
+import { Op, Operation } from './components/Operation';
+import Nugget from './components/Nugget';
 
 function App() {
-  return (
+  const c = (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <PromptArea>
+        <Operation initialOp={Op.AND}>
+          <Nugget text='cookie' />
+          <Nugget text='chocolate' />
+        </Operation>
+      </PromptArea>
     </div>
   );
+
+  console.log(c);
+
+  return c;
 }
 
 export default App;

@@ -6,6 +6,13 @@
       "dom.iterable",
       "esnext"
     ],
+    "paths": {
+
+      "@material-ui/*": ["./node_modules/@material-ui/core/esm/*"]
+    },
+    "typeRoots": [
+      "node_modules/@types",
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
