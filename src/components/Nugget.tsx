@@ -14,10 +14,10 @@ export default function Nugget({ text, initialScore }: { text: string, initialSc
             <span className='score'>{score > 0 ? "+" + score : score}</span>
             <span className='buttons'>
             <ButtonGroup size="small" orientation='vertical'>
-                <Button onClick={() => setScore(score + 1)}>
+                <Button onClick={() => setScore(score + 1)} className='incScore'>
                     <KeyboardArrowUpIcon />
                 </Button>
-                <Button onClick={() => setScore(score - 1)}>
+                <Button onClick={() => setScore(score - 1)} className='decScore'>
                     <KeyboardArrowDownIcon />
                 </Button>
             </ButtonGroup>
