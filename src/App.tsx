@@ -4,8 +4,10 @@ import './App.css';
 import PromptArea from './components/PromptArea';
 import { Op, Operation } from './components/Operation';
 import Nugget from './components/Nugget';
+import { Ast } from './lib/ast';
 
 function App() {
+  const ast = new Ast();
   const c = (
     <div className="App">
       <PromptArea>

@@ -1,24 +1,18 @@
-import { Badge, Chip, Menu, MenuItem } from "@material-ui/core";
-import Nugget from "./Nugget";
-import React, { Children, Component, ReactNode, ReactPropTypes } from 'react';
-import { Composable } from "./IComposable";
+import { Menu, MenuItem } from "@material-ui/core";
+import React, { Children, ReactNode } from 'react';
 import "./Operation.css";
+import { Op } from "../lib/operator";
+import { randomUUID } from "crypto";
 
-enum Op {
-    JOINED = "joined",
-    AND = "and",
-    SWAPPED = "swaped",
-    SWAP = "swap",
-    BLENDED = "blended",
-    BLEND = "blend",
-}
 
-function Operation({ children, initialOp }: { children: ReactNode[], initialOp: Op }) {
+function Operation({ children, initialOp }: { children: ReactNode[], initialOp: Op}) {
     const [op, setOp] = React.useState(initialOp);
     const [contextMenu, setContextMenu] = React.useState<{
         mouseX: number;
         mouseY: number;
       } | null>(null);
+
+      const [id, ] = React.useState(randomUUID);
 
       const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
