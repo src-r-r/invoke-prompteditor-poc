@@ -18,8 +18,12 @@ export default function PromptArea({ children }: { children?: any }) {
 
   const handleClose = (value: string) => {
     setOpen(false);
-    setSelectedValue(value);
+    // setSelectedValue(value);
   };
+
+  const handleComposableClicked = (composable : Composable) => {
+    setSelectedComposable(composable);
+  }
 
     return (
         <div>

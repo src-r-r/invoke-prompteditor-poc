@@ -2,6 +2,7 @@ import { Button, ButtonGroup, Chip, Divider } from '@material-ui/core';
 import React, { Component, useState } from 'react';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowUp';
+import {Composable} from "./IComposable"
 
 import "./Nugget.css";
 
@@ -23,5 +24,5 @@ export default function Nugget({ text, initialScore }: { text: string, initialSc
             </ButtonGroup>
             </span>
         </div>
-    );
+    ) as Composable;
 }

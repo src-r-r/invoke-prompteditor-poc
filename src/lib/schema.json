@@ -1,0 +1,27 @@
+[
+    {
+        "name": "library_item",
+        "model": {
+            "id:uuid": {"pk": true},
+            "name:string": {},
+            "prompt:string": {},
+            "type:string": {}
+        }
+    },
+    {
+        "name": "nugget",
+        "model": {
+            "id:uuid": {"pk": true},
+            "library_item:uuid": {},
+            "score:number": {}
+        }
+    },
+    {
+        "name": "operation",
+        "model": {
+            "id:uuid": {"pk": true},
+            "op:string": {},
+            "items:array": {}
+        }
+    }
+]
