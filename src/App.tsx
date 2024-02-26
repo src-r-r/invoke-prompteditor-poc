@@ -47,9 +47,9 @@ function App() {
   return (
     <>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="prompt-area">
-          <Tab label="Prompt Composer" {...a11yProps(0)} />
-          <Tab label="Text Prompt" {...a11yProps(1)} />
+        <Tabs value={value} onChange={handleChange} aria-label="prompt-selection-tabs">
+          <Tab label="Prompt Composer" {...a11yProps(0)} aria-label="prompt-composer-tab" />
+          <Tab label="Text Prompt" {...a11yProps(1)} aria-label="text-prompt-tab" />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -57,7 +57,7 @@ function App() {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <div>
-          <textarea>{ $textComposition.get() }</textarea>
+          <textarea aria-label='text-area'>{ $textComposition.get() }</textarea>
         </div>
       </CustomTabPanel>
     </>

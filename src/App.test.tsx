@@ -4,13 +4,13 @@ import App from './App';
 
 test('renders Prompt Composer tab', () => {
   render(<App />);
-  const tab = screen.getByText('Prompt Composer');
+  const tab = screen.getByText('prompt-composer-tab');
   expect(tab).toBeInTheDocument();
 });
 
 test('changes tab when clicked', () => {
   render(<App />);
-  const tab = screen.getByText('Prompt Composer');
+  const tab = screen.getByLabelText('text-prompt-tab');
   fireEvent.click(tab);
-  expect(screen.getByText('Text Prompt')).toBeInTheDocument();
+  expect(screen.getByLabelText('text-area')).toBeInTheDocument();
 });
