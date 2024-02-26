@@ -53,7 +53,7 @@ export function addItemToLibrary(item: LibraryItem) {
 }
 
 export function removeItemFromLibrary(item: LibraryItem) {
-    $library.set($library.get().filter(i => i.id != item.id));
+    $library.set($library.get().filter(i => (i.id !== item.id)));
 }
 
 export const $composition = atom<Composition>([])
@@ -67,25 +67,26 @@ export function insertIntoComposition(item: LibraryItem) {
 
 export function removeFromComposition(item: PromptItem) {
     $composition.set([
-        ...$composition.get().filter(i => i.id === item.id)
+        ...$composition.get().filter(i => (i.id !== item.id))
     ]);
 }
 
-export function increaseNuggetScore(nuggetId: Id, amount: number = 1) {
-    $composition.set([
-        ...$composition.get().map(item => {
-            return (item.id == nuggetId && "score" in item) ? { ...item, score: item.score + amount } : item;
+function nuggetDelta(nuggetId : Id, delta : number) {
+    $composition.set($composition.get().map(item => {
+        if ((item.id === nuggetId) && ("score" in item)) {
+            const o = {...item, score: item.score + delta};
+            return o;
         }
-        ),
-    ]);
+        return item;
+    }
+    ));
 }
-export function decreaseNuggetScore(nuggetId: Id, amount: number = 1) {
-    $composition.set([
-        ...$composition.get().map(item => {
-            return (item.id == nuggetId && "score" in item) ? { ...item, score: item.score - amount } : item;
-        }
-        ),
-    ]);
+
+export function increaseNuggetScore(nuggetId: Id, amount: number = 1) {
+    return nuggetDelta(nuggetId, amount)
+}
+export function decreaseNuggetScore(nuggetId: Id, amount: number = -1) {
+    return nuggetDelta(nuggetId, amount);
 }
 
 export function changeOperationOp(operationId: Id, op: Op) {
@@ -98,17 +99,28 @@ export function changeOperationOp(operationId: Id, op: Op) {
 }
 
 export function nuggetToText(nugget: Nugget) {
-    const sign = (nugget.score > 0 ? '+' : (nugget.score < 0 ? '-' : ''))
-    return "(" + nugget.item.prompt + ")" + (new Array(nugget.score)).map(i => sign).join("");
+    const absScore = Math.abs(nugget.score);
+    const neg = nugget.score < 0;
+    const pos = nugget.score > 0;
+    const sign = pos ? "+" : (neg ? "-" : "");
+    const prompt = nugget.item.prompt;
+
+    const signs = new Array(absScore).fill(sign).join("")
+
+    if (prompt.includes(" ")) {
+        return "(" + nugget.item.prompt + ")" + signs;
+    }
+    return nugget.item.prompt + signs;
+
 }
 
 export function operationToText(operation: Operation): string {
     return "(" + operation.items.map(nuggetToText).join(", ") + ")." + operation.op + "()";
 }
 
-export const textComposition = computed($composition, (composition) => {
+export const $textComposition = computed($composition, (composition) => {
     const JOINER = ", ";
-    composition.map(item => {
+    return composition.map(item => {
         return "op" in item ? operationToText(item) : nuggetToText(item);
     }).join(JOINER);
 });
@@ -128,9 +140,15 @@ export const $slottedComposition = computed($composition, (composition) => {
             if (!nugget.items.length)
                 return null;
             const cat = nugget.items[0].item.category;
+            if (!slotted[catI(cat)]) {
+                slotted[catI(cat)] = [];
+            }
             slotted[catI(cat)].push(nugget);
         } else {
             const cat = nugget.item.category;
+            if (!slotted[catI(cat)]) {
+                slotted[catI(cat)] = [];
+            }
             slotted[catI(cat)].push(nugget);
         }
     })

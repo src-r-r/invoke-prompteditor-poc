@@ -5,6 +5,7 @@ import { PromptLibrary } from './PromptLibrary';
 import { SimpleDialogProps } from './PromptLibrary';
 import { Category, LibraryItem as LibItemType } from '../lib/prompt';
 import { randomUUID } from 'crypto';
+import { act } from 'react-dom/test-utils';
 
 const mockOnAddItem = jest.fn();
 const mockItem: LibItemType = {
@@ -38,6 +39,8 @@ test('renders PromptLibrary with add button', () => {
 test('calls onAddItem when add button is clicked', async () => {
     render(<PromptLibrary {...mockProps} />);
     const addButton = screen.getByLabelText('Add');
-    await userEvent.click(addButton);
+    act(() => {
+        userEvent.click(addButton);
+    })
     expect(mockOnAddItem).toHaveBeenCalledWith(mockItem);
 });

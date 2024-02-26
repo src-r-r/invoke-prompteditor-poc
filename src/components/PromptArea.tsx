@@ -12,7 +12,7 @@ import { useStore } from '@nanostores/react'
 
 type Composable = (typeof Nugget) | (typeof Operation);
 
-export default function PromptArea({ children }: { children?: any }) {
+export default function PromptArea(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -41,9 +41,7 @@ export default function PromptArea({ children }: { children?: any }) {
 
       </Button>
       <Masonry columns={Object.keys(Category).length} spacing={2} sequential>
-        {slottedComposition.map(nugget => {
-          
-        })}
+          <div>Something</div>
       </Masonry>
     </div>
   );

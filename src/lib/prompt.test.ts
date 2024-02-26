@@ -11,7 +11,11 @@ import {
     Category,
     removeFromComposition,
     increaseNuggetScore,
-    decreaseNuggetScore, changeOperationOp, nuggetToText, operationToText, textComposition,
+    decreaseNuggetScore,
+    changeOperationOp,
+    nuggetToText,
+    operationToText,
+    $textComposition,
     $slottedComposition,
     Operation,
     Nugget,
@@ -37,7 +41,11 @@ const mockComposition: CompositionType = [
     },
 ];
 
-beforeAll(() => {
+beforeEach(() => {
+  // clear out the library and composition
+  $library.set([]);
+  $composition.set([]);
+  // insert the items
   mockLibrary.forEach(item => {
         addItemToLibrary(item);
         insertIntoComposition(item);
@@ -65,13 +73,17 @@ test("removeFromComposition", () => {
 });
 
 test("increaseNuggetScore", () => {
-    increaseNuggetScore(mockComposition[0].id, 2);
-    expect((mockComposition[0] as Nugget).score).toBe(2);
+    const comp = $composition.get();
+    increaseNuggetScore(comp[0].id, 2);
+    const comp2 = $composition.get();
+    expect((comp2[0] as Nugget).score).toBe(2);
 });
 
 test("decreaseNuggetScore", () => {
-    decreaseNuggetScore(mockComposition[0].id, 2);
-    expect((mockComposition[0] as Nugget).score).toBe(-2);
+    const comp = $composition.get();
+    decreaseNuggetScore(comp[1].id, -2);
+    const comp2 = $composition.get();
+    expect((comp2[1] as Nugget).score).toBe(-2);
 });
 
 test("changeOperationOp", () => {
@@ -80,27 +92,31 @@ test("changeOperationOp", () => {
 });
 
 test("nuggetToText", () => {
-    expect(nuggetToText({ id: randomUUID(), item: mockLibrary[0], score: 0 })).toBe("(Prompt1)");
+    expect(nuggetToText({ id: randomUUID(), item: mockLibrary[0], score: 0 })).toBe("Prompt1");
 });
 
 test("operationToText", () => {
     expect(operationToText({
         id: randomUUID(), op: Op.AND, items: [
             { id: randomUUID(), item: mockLibrary[0], score: 0 },
-            { id: randomUUID(), item: mockLibrary[1], score: 0 },
+            { id: randomUUID(), item: mockLibrary[1], score: 2 },
         ]
-    })).toBe("(Prompt1, Prompt2).concat()");
+    })).toBe("(Prompt1, Prompt2++).and()");
 });
 
 test("textComposition", () => {
-    expect(textComposition).toBe("(Prompt1)(Prompt2)(Prompt3)(Prompt4)(Prompt1, Prompt2).concat()");
+    $composition.set(mockComposition);
+    expect($textComposition.get()).toBe("Prompt1, Prompt2, Prompt3, Prompt4, (Prompt1, Prompt2).and()");
 });
 
 test("$slottedComposition", () => {
-    expect($slottedComposition).toEqual([
-        [mockComposition[0], mockComposition[1], mockComposition[2], mockComposition[3]],
-        [],
-        [],
-        [],
+    $composition.set(mockComposition);
+    const comp = $composition.get();
+    const slotted = $slottedComposition.get();
+    expect(slotted).toEqual([
+        [comp[0], comp[4]],
+        [comp[1]],
+        [comp[2]],
+        [comp[3]],
     ]);
 });
