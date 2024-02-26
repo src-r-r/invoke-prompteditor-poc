@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { LibraryItem } from './LibraryItem';
 import { Category, LibraryItem as LibItem } from '../lib/prompt';
 import { randomUUID } from 'crypto';
+import { act } from 'react-dom/test-utils';
 
 
 const mockOnAddItem = jest.fn();
@@ -16,7 +17,7 @@ const mockItem: LibItem = {
 };
 
 test('renders library item with add button', () => {
-    render(<LibraryItem item={mockItem} onAddItem={mockOnAddItem} />);
+    render(<LibraryItem item={mockItem} onInsertItem={mockOnAddItem} />);
 
     const addButton = screen.getByLabelText('Add');
     const itemName = screen.getByText((content, element) => {
@@ -30,11 +31,14 @@ test('renders library item with add button', () => {
 });
 
 test('calls onAddItem when add button is clicked', async () => {
-    render(<LibraryItem item={mockItem} onAddItem={mockOnAddItem} />);
+    render(<LibraryItem item={mockItem} onInsertItem={mockOnAddItem} />);
 
     const addButton = screen.getByLabelText('Add');
 
-    userEvent.click(addButton);
+    act(() => {
+        userEvent.click(addButton);
+    })
+
 
     expect(mockOnAddItem).toHaveBeenCalledWith(mockItem);
 });
