@@ -5,20 +5,28 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowUp';
 import {Composable} from "./IComposable"
 
 import "./Nugget.css";
+import { Nugget as NuggetType, decreaseNuggetScore, increaseNuggetScore } from '../lib/prompt';
 
-export default function Nugget({ text, initialScore }: { text: string, initialScore?: number }) {
-    const [score, setScore] = useState(initialScore || 0);
+export interface NuggetProps {
+    nugget : NuggetType,
+}
+
+export default function Nugget(props : NuggetProps) {
+    const {nugget} = props;
+
+    const scoreDisp = nugget.score > 0 ? "+" + nugget.score : nugget.score;
+    
     return (
         <div className='nugget'>
-            <span className='text'>{text}</span>
+            <span className='text'>{nugget.item.name || nugget.item.prompt}</span>
             <Divider orientation="vertical" variant="middle" flexItem />
-            <span className='score'>{score > 0 ? "+" + score : score}</span>
+            <span className='score'>{scoreDisp}</span>
             <span className='buttons'>
             <ButtonGroup size="small" orientation='vertical'>
-                <Button onClick={() => setScore(score + 1)} className='incScore'>
+                <Button onClick={() => increaseNuggetScore(nugget.id)} className='incScore'>
                     <KeyboardArrowUpIcon />
                 </Button>
-                <Button onClick={() => setScore(score - 1)} className='decScore'>
+                <Button onClick={() => decreaseNuggetScore(nugget.id)} className='decScore'>
                     <KeyboardArrowDownIcon />
                 </Button>
             </ButtonGroup>

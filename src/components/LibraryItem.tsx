@@ -5,14 +5,14 @@ import { Button } from "@material-ui/core";
 
 export interface StyleProps {
     item: LibItem
-    onAddItem: (item: LibItem) => void;
+    onInsertItem: (item: LibItem) => void;
 }
 
 export function LibraryItem(props: StyleProps) {
-    const { item, onAddItem } = props
+    const { item, onInsertItem } = props
     return (
         <div>
-            <Button onClick={() => onAddItem(item)}>
+            <Button onClick={() => onInsertItem(item)} aria-label="Add">
                 <AddCircleOutlineOutlinedIcon/>
             </Button>
             <span>

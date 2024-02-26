@@ -1,16 +1,19 @@
 import { Button } from '@material-ui/core';
-import { Children, ReactNode } from 'react';
+import Masonry from '@mui/lab/Masonry';
 import Nugget from './Nugget';
 import { Operation } from './Operation';
 import AddIcon from '@mui/icons-material/Add';
 import "./PromptArea.css";
 import { PromptLibrary } from './PromptLibrary';
 import React from 'react';
+import { $composition, $slottedComposition, LibraryItem, insertIntoComposition } from '../lib/prompt';
+import { Category } from '@mui/icons-material';
+import { useStore } from '@nanostores/react'
 
 type Composable = (typeof Nugget) | (typeof Operation);
 
 export default function PromptArea({ children }: { children?: any }) {
-    const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -21,29 +24,27 @@ export default function PromptArea({ children }: { children?: any }) {
     // setSelectedValue(value);
   };
 
-  const handleComposableClicked = (composable : Composable) => {
-    setSelectedComposable(composable);
+  const handleOnInsertItem = (item: LibraryItem) => {
+    insertIntoComposition(item);
   }
 
-    return (
-        <div>
-            <Button className="add-button">
-                <AddIcon />
-                <PromptLibrary
-                    open={isPromptLibraryOpen}
-                    onClose={handleClose}
-                    ></PromptLibrary>
+  const slottedComposition = useStore($slottedComposition);
 
-            </Button>
-            <div>
-            {
-                Children.map(children, child => {
-                    return (<div>
-                        {child as ReactNode}
-                    </div>)
-                })
-            }
-            </div>
-        </div>
-    );
+  return (
+    <div>
+      <Button className="add-button">
+        <AddIcon />
+        <PromptLibrary
+          open={open}
+          onInsertItem={handleOnInsertItem}
+        ></PromptLibrary>
+
+      </Button>
+      <Masonry columns={Object.keys(Category).length} spacing={2} sequential>
+        {slottedComposition.map(nugget => {
+          
+        })}
+      </Masonry>
+    </div>
+  );
 }

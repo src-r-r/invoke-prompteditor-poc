@@ -4,10 +4,16 @@ import "./Operation.css";
 import { Op } from "../lib/operator";
 import { randomUUID } from "crypto";
 import { Composable } from "./IComposable";
+import { Operation as OperationType, changeOperationOp } from "../lib/prompt";
+import Nugget from "./Nugget";
 
+interface OperationProps {
+  operation : OperationType
+}
 
-function Operation({ children, initialOp }: { children: ReactNode[], initialOp: Op }) {
-  const [op, setOp] = React.useState(initialOp);
+function Operation(props : OperationProps) {
+  const {operation} = props;
+
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
     mouseY: number;
@@ -35,19 +41,19 @@ function Operation({ children, initialOp }: { children: ReactNode[], initialOp: 
   };
 
   const changeOperator = (opV: string) => {
-    setOp(opV as unknown as Op);
+    changeOperationOp(operation.id, opV as Op);
     handleClose();
   }
 
   return (
     <div className="operation" onContextMenu={handleContextMenu}>
-      <div className="title">{op}</div>
+      <div className="title">{operation.op}</div>
       <div className="nuggets">
-        {Children.map(children, child => {
-          return (<div>
-            {child}
-          </div>)
-        })}
+        {
+          operation.items.map(nugget => {
+            return <Nugget nugget={nugget} />
+          })
+        }
       </div>
       <Menu
         open={contextMenu !== null}
