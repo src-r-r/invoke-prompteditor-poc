@@ -12,7 +12,7 @@ import { useStore } from '@nanostores/react'
 
 type Composable = (typeof Nugget) | (typeof Operation);
 
-export default function PromptArea(props) {
+export default function PromptComposer(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {

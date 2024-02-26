@@ -23,10 +23,10 @@ export default function Nugget(props : NuggetProps) {
             <span className='score'>{scoreDisp}</span>
             <span className='buttons'>
             <ButtonGroup size="small" orientation='vertical'>
-                <Button onClick={() => increaseNuggetScore(nugget.id)} className='incScore'>
+                <Button onClick={() => increaseNuggetScore(nugget.id)} className='incScore' aria-label="incScore">
                     <KeyboardArrowUpIcon />
                 </Button>
-                <Button onClick={() => decreaseNuggetScore(nugget.id)} className='decScore'>
+                <Button onClick={() => decreaseNuggetScore(nugget.id)} className='decScore' aria-label='decScore'>
                     <KeyboardArrowDownIcon />
                 </Button>
             </ButtonGroup>
