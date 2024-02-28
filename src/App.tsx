@@ -3,6 +3,7 @@ import './App.css';
 import PromptComposer from './components/PromptComposer';
 import { Box, Tabs, Tab, Typography } from '@material-ui/core';
 import { $textComposition } from './lib/prompt';
+import { TextPrompt } from './components/TextPrompt';
 
 
 interface TabPanelProps {
@@ -56,9 +57,7 @@ function App() {
         <PromptComposer />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <div>
-          <textarea aria-label='text-area'>{ $textComposition.get() }</textarea>
-        </div>
+        <TextPrompt />
       </CustomTabPanel>
     </>
   );

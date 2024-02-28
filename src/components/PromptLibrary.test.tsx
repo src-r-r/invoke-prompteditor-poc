@@ -31,6 +31,7 @@ const mockOpen: boolean = true;
 const mockProps: SimpleDialogProps = {
     open: mockOpen,
     onInsertItem: mockOnAddItem,
+    onClose: mockOnClose,
 };
 
 const mockLibrary: LibraryType = [

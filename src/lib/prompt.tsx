@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { v4 as randomUUID } from "uuid";
 import { Op } from "./operator";
 import { atom, computed } from "nanostores";
 
@@ -8,11 +8,16 @@ type IdAble = {
     id: Id,
 }
 
+// only vibes and styles will have a name.
 export enum Category {
     subject = "subject",
     style = "style",
     vibes = "vibes",
     medium = "medium",
+}
+
+export function categoryHasName(cat : Category) {
+    return (cat === Category.style || cat === Category.vibes)
 }
 
 const N_CATEGORIES = Object.keys(Category).length;

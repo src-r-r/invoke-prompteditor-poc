@@ -2,8 +2,7 @@ import { Menu, MenuItem } from "@material-ui/core";
 import React, { Children, ReactNode } from 'react';
 import "./Operation.css";
 import { Op } from "../lib/operator";
-import { randomUUID } from "crypto";
-import { Composable } from "./IComposable";
+import { v4 as randomUUID } from "uuid";
 import { Operation as OperationType, changeOperationOp } from "../lib/prompt";
 import Nugget from "./Nugget";
 
@@ -72,7 +71,7 @@ function Operation(props : OperationProps) {
         })}
       </Menu>
     </div>
-  ) as Composable;
+  );
 }
 
 export { Operation, Op };

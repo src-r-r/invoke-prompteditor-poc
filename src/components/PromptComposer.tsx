@@ -1,27 +1,29 @@
 import { Button } from '@material-ui/core';
 import Masonry from '@mui/lab/Masonry';
-import Nugget from './Nugget';
-import { Operation } from './Operation';
 import AddIcon from '@mui/icons-material/Add';
-import "./PromptArea.css";
+import "./PromptComposer.css";
 import { PromptLibrary } from './PromptLibrary';
-import React from 'react';
-import { $composition, $slottedComposition, LibraryItem, insertIntoComposition } from '../lib/prompt';
+import React, { useState } from 'react';
+import { $slottedComposition, LibraryItem, PromptItem, insertIntoComposition } from '../lib/prompt';
 import { Category } from '@mui/icons-material';
 import { useStore } from '@nanostores/react'
+import Nugget from './Nugget';
+import { Stack } from '@mui/material';
+import { Operation } from './Operation';
 
-type Composable = (typeof Nugget) | (typeof Operation);
+export interface PromptComposerProps {
 
-export default function PromptComposer(props) {
-  const [open, setOpen] = React.useState(false);
+}
+
+export default function PromptComposer(props: PromptComposerProps) {
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const handleClose = (value: string) => {
+  const handleClose = () => {
     setOpen(false);
-    // setSelectedValue(value);
   };
 
   const handleOnInsertItem = (item: LibraryItem) => {
@@ -30,19 +32,31 @@ export default function PromptComposer(props) {
 
   const slottedComposition = useStore($slottedComposition);
 
+  const promptItemFactory = (promptItem : PromptItem, key : string) => {
+    return "op" in promptItem ? <Operation operation={promptItem} key={key} /> : <Nugget nugget={promptItem} key={key} />
+  }
+
   return (
     <div>
-      <Button className="add-button">
-        <AddIcon />
-        <PromptLibrary
-          open={open}
-          onInsertItem={handleOnInsertItem}
-        ></PromptLibrary>
-
-      </Button>
-      <Masonry columns={Object.keys(Category).length} spacing={2} sequential>
-          <div>Something</div>
-      </Masonry>
+      <div>
+        <Button className="add-button" onClick={handleClickOpen}>
+          <AddIcon />
+          <PromptLibrary
+            open={open}
+            onInsertItem={handleOnInsertItem}
+            onClose={handleClose}
+          ></PromptLibrary>
+        </Button>
+      </div>
+      <div>
+        {
+          slottedComposition.map((itemCol, i) => (
+              <Stack>
+                {itemCol.map((promptItem, j) => promptItemFactory(promptItem, `item-${j}-${j}`))}
+              </Stack>
+            ))
+        }
+      </div>
     </div>
   );
 }

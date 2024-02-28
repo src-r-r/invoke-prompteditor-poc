@@ -1,4 +1,3 @@
-import { Composable } from "./IComposable";
 import { LibraryItem as LibItem } from "../lib/prompt";
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { Button } from "@material-ui/core";
@@ -23,5 +22,5 @@ export function LibraryItem(props: StyleProps) {
                 }
             </span>
         </div>
-    ) as Composable;
+    );
 };
