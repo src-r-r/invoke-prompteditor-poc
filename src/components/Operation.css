@@ -1,16 +1,29 @@
 .operation {
     display: inline-block;
+    border: 1px solid lightgray;
 }
 
 .operation .title {
-    padding: 4pt;
-    margin: 4pt;
     text-align: left;
 }
 
 .operation .nuggets {
     display: inline-flex;
-    background-color: #ffdddd;
-    border: 1px solid coral;
+    border-style: solid;
     border-radius: 10pt;
+}
+
+.operation.and .nuggets, .operation.joined .nuggets {
+    background-color: #b983a3;
+    border-color: #532e44;
+}
+
+.operation.swapped .nuggets, .operation.swap .nuggets {
+    background-color: #8dacbd;
+    border-color: #4c6978;
+}
+
+.operation.blended .nuggets, .operation.blend .nuggets {
+    background-color: #a1af86;
+    border-color: #58663d;
 }

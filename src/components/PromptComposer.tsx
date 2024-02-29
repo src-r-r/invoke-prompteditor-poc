@@ -72,7 +72,7 @@ export default function PromptComposer(props: PromptComposerProps) {
 
     return ("op" in promptItem ?
       <Operation operation={promptItem} key={key} {...callbacks} />
-      : <Nugget nugget={promptItem} key={key} {...callbacks} />)
+      : <Nugget nugget={promptItem} key={key} isTopLevel={true} {...callbacks} />)
   }
 
   return (
@@ -90,9 +90,9 @@ export default function PromptComposer(props: PromptComposerProps) {
       <div>
         {
           slottedComposition.map((itemCol, i) => (
-            <Stack>
+            <>
               {itemCol.map((promptItem, j) => promptItemFactory(promptItem, `item-${j}-${j}`))}
-            </Stack>
+            </>
           ))
         }
       </div>

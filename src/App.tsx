@@ -54,11 +54,11 @@ function App() {
     const promptItems = [
       {
         id: uuid4(), items: [
-          { id: uuid4(), item: libItems[0] },
-          { id: uuid4(), item: libItems[1] },
+          { id: uuid4(), item: libItems[0], score: -2 },
+          { id: uuid4(), item: libItems[1], score: 1 },
         ], op: Op.AND,
       },
-      { id: uuid4(), item: libItems[2] },
+      { id: uuid4(), item: libItems[2], score: 0, },
     ] as Composition;
 
     $library.set(libItems);

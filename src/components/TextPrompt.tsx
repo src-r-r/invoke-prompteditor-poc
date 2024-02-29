@@ -3,9 +3,14 @@ import { $textComposition } from "../lib/prompt";
 import "./TextPrompt.css";
 import { useStore } from "@nanostores/react";
 
-export function TextPrompt () {
+export function TextPrompt() {
     const text = useStore($textComposition);
     return (
-        <TextareaAutosize content={text} className="text-prompt" />
+        <>
+            <TextareaAutosize
+                className="text-prompt"
+                defaultValue={text}
+            />
+        </>
     )
 }

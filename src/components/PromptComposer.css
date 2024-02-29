@@ -3,3 +3,9 @@
     right: 10pt;
     top: 10pt;
 }
+
+.prompt-item {
+    margin: 4pt;
+    padding: 2pt;
+    border-radius: 5pt;
+}

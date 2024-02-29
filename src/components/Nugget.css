@@ -1,13 +1,19 @@
-.nugget {
+.nugget.toplevel {
     border: 1px solid slategray;
-    border-radius: 10pt;
     display: inline-flex;
-    margin: 10pt;
+}
+
+.operation .nugget {
+    border: 1px solid white;
+    border-radius: 2pt;
+    display: inline-flex;
 }
 
 .nugget > .text, .nugget > .score, .nugget.buttons {
-    display: flex;
     padding: 4pt;
-    margin-top: 10pt;
-    vertical-align: text-bottom;
+    display: inline-block;
+}
+
+.nugget .buttons button {
+    max-height: 12pt;
 }

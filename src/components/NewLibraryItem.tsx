@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, MenuItem, TextField } from "@material-ui/core";
+import { Button, Container, FormControl, InputLabel, MenuItem, Table, TableRow, TextField } from "@material-ui/core";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Category, LibraryItem, addItemToLibrary, categoryHasName } from "../lib/prompt";
 import { ChangeEvent, useState } from "react";
@@ -46,32 +46,28 @@ export function NewLibraryItem(props: NewLibraryItemProps) {
     const catChoices = Object.keys(Category);
 
     return (
-        <div>
-            <FormControl onSubmit={handleCreateItem}>
-                <div>
-                    <InputLabel htmlFor="new-prompt-category">Category</InputLabel>
-                    <Select
-                        native
-                        id="new-prompt-category"
-                        aria-label="Prompt Item Category"
-                        value={category}
-                        onChange={(e) => handleCategoryChange(e)}
-                    >
-                        {catChoices.map(cat => (
-                            <option value={cat} id={cat} key={cat}>{titleCase(cat)}</option>
-                        ))}
-                    </Select>
-                </div>
-                <div>
-                    {categoryHasName(category) ? (<InputLabel htmlFor="name">Name</InputLabel>) : <></>}
-                    {categoryHasName(category) ? (<TextField aria-label="Prompt Item Name" value={name} onChange={handleNameChange} id="name" />) : <></>}
-                </div>
-                <div>
-                    <InputLabel htmlFor="prompt">Prompt</InputLabel>
-                    <TextField aria-label="Prompt Item Text" value={prompt} onChange={handlePromptChange} id="prompt" />
-                    <Button onClick={handleCreateItem} >Create</Button>
-                </div>
+        <Container className="new-item-form">
+            <FormControl onSubmitCapture={handleCreateItem}>
+                <InputLabel htmlFor="new-prompt-category">Category</InputLabel>
+                <Select
+                    native
+                    id="new-prompt-category"
+                    aria-label="Prompt Item Category"
+                    value={category}
+                    onChange={(e) => handleCategoryChange(e)}
+                >
+                    {catChoices.map(cat => (
+                        <option value={cat} id={cat} key={cat}>{titleCase(cat)}</option>
+                    ))}
+                </Select>
+                {categoryHasName(category) && <>
+                    <InputLabel htmlFor="name">Name</InputLabel>
+                    <TextField aria-label="Prompt Item Name" value={name} onChange={handleNameChange} id="name" />
+                </>}
+                <InputLabel htmlFor="prompt">Prompt</InputLabel>
+                <TextField aria-label="Prompt Item Text" value={prompt} onChange={handlePromptChange} id="prompt" />
+                <Button onClick={handleCreateItem} >Create</Button>
             </FormControl>
-        </div>
+        </Container>
     )
 }

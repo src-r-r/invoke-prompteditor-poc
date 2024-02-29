@@ -92,7 +92,7 @@ function Operation(props: OperationProps) {
       onDragOver={handleOnDragOver}
       onMouseEnter={handleOnMouseEnter}
       onMouseOut={handleOnMouseLeave}
-      className="operation"
+      className={`operation ${operation.op} prompt-item`}
       onContextMenu={handleContextMenu}
       data-promptitem-id={operation.id}
     >
@@ -100,7 +100,7 @@ function Operation(props: OperationProps) {
       <div className="nuggets">
         {
           operation.items.map(nugget => {
-            return <Nugget nugget={nugget} />
+            return <Nugget nugget={nugget} isTopLevel={false} />
           })
         }
       </div>

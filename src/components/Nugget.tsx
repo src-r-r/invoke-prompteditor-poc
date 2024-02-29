@@ -11,6 +11,7 @@ import { useStore } from '@nanostores/react';
 
 export interface NuggetProps extends PromptItemProps {
     nugget: NuggetType,
+    isTopLevel?: boolean,
 }
 
 export default function Nugget(props: NuggetProps) {
@@ -22,6 +23,7 @@ export default function Nugget(props: NuggetProps) {
         onDrop,
         onMouseEnter,
         onMouseLeave,
+        isTopLevel,
     } = props;
 
     const scoreDisp = nugget.score > 0 ? "+" + nugget.score : nugget.score;
@@ -29,6 +31,8 @@ export default function Nugget(props: NuggetProps) {
     const sourceItem = useStore($sourceItem);
     const composition = useStore($composition)
     const thisId = `prompt-item-${nugget.id}`
+
+    const className = isTopLevel ? 'nugget toplevel prompt-item' : 'nugget child prompt-item';
 
     const handleOnDragStart = () => {
         onDragStart ? onDragStart(nugget) : null;
@@ -66,7 +70,7 @@ export default function Nugget(props: NuggetProps) {
 
     return (
         <div
-            className='nugget prompt-item'
+            className={className}
             id={thisId}
             draggable
             onDragStart={handleOnDragStart}

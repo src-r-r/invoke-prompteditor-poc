@@ -10,7 +10,7 @@ export interface StyleProps {
 export function LibraryItem(props: StyleProps) {
     const { item, onInsertItem } = props
     return (
-        <div>
+        <div className={`library-item ${item.category}`}>
             <Button onClick={() => onInsertItem(item)} aria-label="Add">
                 <AddCircleOutlineOutlinedIcon/>
             </Button>

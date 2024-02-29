@@ -1,3 +1,18 @@
 .prompt-library-dialog .categories div {
     display: inline;
+    margin: 20pt;
+}
+
+
+.library-item button, .library-item span {
+    display: inline-block;
+    vertical-align: sub;
+}
+
+.new-item-form {
+    border: 1px solid blue;
+}
+
+.hidden {
+    display: none;
 }

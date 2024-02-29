@@ -34,7 +34,7 @@ export function PromptLibrary(props: SimpleDialogProps) {
 
     const [doCreate, setDoCreate] = useState(false);
 
-    const [visibleCategories, setVisibleCategories] = useState([] as Category[]);
+    const [visibleCategories, setVisibleCategories] = useState(Object.keys(Category) as Category[]);
 
     const handleOnAddItem = (item: LibItemType) => {
         // onAddItem(item);
@@ -44,12 +44,22 @@ export function PromptLibrary(props: SimpleDialogProps) {
         onInsertItem(item);
     }
 
-    const filterCat = (catKey: string, v: ChangeEvent<HTMLInputElement>) => {
-        const isChecked = v.target.value === '1';
-        setVisibleCategories((visibleCategories.includes(catKey as Category) && !isChecked) ? visibleCategories.filter(c => c != catKey) : [...visibleCategories, catKey as Category]);
-        document.querySelectorAll(`.category-${catKey}`).forEach($el => {
-            if (isChecked) show($el)
-            else hide($el)
+    const filterCat = (catKey: string) => {
+        document.querySelectorAll(`.library-item`).forEach($el => {
+            console.log("Found %x", $el);
+            show($el);
+        });
+        if (visibleCategories.includes(catKey as Category)) {
+            setVisibleCategories(visibleCategories.filter((v) => v !== catKey));
+        } else {
+            setVisibleCategories([...visibleCategories, catKey as Category]);
+        }
+        console.log(visibleCategories);
+        document.querySelectorAll(`.library-item`).forEach($el => {
+            Object.keys(Category).forEach(c => {
+                if (c in visibleCategories) show($el)
+                else hide($el)
+            })
         });
     }
 
@@ -69,8 +79,8 @@ export function PromptLibrary(props: SimpleDialogProps) {
             <div className="categories">
                 {categoryChoices.map(catKey => {
                     return (
-                        <div key={catKey}>
-                            <Checkbox onChange={v => filterCat(catKey, v)} />
+                        <div key={catKey} onMouseDown={() => filterCat(catKey)}>
+                            <Checkbox checked={visibleCategories.includes(catKey as Category)} />
                             <span>{title(catKey)}</span>
                         </div>
                     )
