@@ -2,7 +2,7 @@ import { Button, FormControl, InputLabel, MenuItem, TextField } from "@material-
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Category, LibraryItem, addItemToLibrary, categoryHasName } from "../lib/prompt";
 import { ChangeEvent, useState } from "react";
-import {v4 as uuidv4} from "uuid"
+import { v4 as uuidv4 } from "uuid"
 
 export interface NewLibraryItemProps {
     onNewCreated?: () => void;
@@ -47,8 +47,8 @@ export function NewLibraryItem(props: NewLibraryItemProps) {
 
     return (
         <div>
-            <div>
-                <FormControl>
+            <FormControl onSubmit={handleCreateItem}>
+                <div>
                     <InputLabel htmlFor="new-prompt-category">Category</InputLabel>
                     <Select
                         native
@@ -61,21 +61,17 @@ export function NewLibraryItem(props: NewLibraryItemProps) {
                             <option value={cat} id={cat} key={cat}>{titleCase(cat)}</option>
                         ))}
                     </Select>
-                </FormControl>
-            </div>
-            <div>
-                <FormControl>
+                </div>
+                <div>
                     {categoryHasName(category) ? (<InputLabel htmlFor="name">Name</InputLabel>) : <></>}
                     {categoryHasName(category) ? (<TextField aria-label="Prompt Item Name" value={name} onChange={handleNameChange} id="name" />) : <></>}
-                </FormControl>
-            </div>
-            <div>
-                <FormControl>
+                </div>
+                <div>
                     <InputLabel htmlFor="prompt">Prompt</InputLabel>
                     <TextField aria-label="Prompt Item Text" value={prompt} onChange={handlePromptChange} id="prompt" />
                     <Button onClick={handleCreateItem} >Create</Button>
-                </FormControl>
-            </div>
+                </div>
+            </FormControl>
         </div>
     )
 }

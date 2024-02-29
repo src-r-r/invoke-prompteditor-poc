@@ -1,0 +1,7 @@
+.prompt-item .drag-target-highlight {
+    border: 1px solid red;
+}
+
+.prompt-item .drag-target-hover {
+    border: 1px solid blue;
+}

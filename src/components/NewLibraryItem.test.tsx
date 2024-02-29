@@ -4,7 +4,6 @@ import {NewLibraryItem} from './NewLibraryItem';
 import { Category, addItemToLibrary, categoryHasName } from '../lib/prompt';
 
 jest.mock('../lib/prompt', () => ({
-    Category: Category,
     addItemToLibrary: jest.fn(),
     categoryHasName: jest.fn(),
 }));

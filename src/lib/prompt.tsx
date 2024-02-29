@@ -1,4 +1,4 @@
-import { v4 as randomUUID } from "uuid";
+import { v4 as randomUUID, v4 as uuidv4 } from "uuid";
 import { Op } from "./operator";
 import { atom, computed } from "nanostores";
 
@@ -46,6 +46,14 @@ export type Operation = IdAble & {
 }
 
 export type PromptItem = Operation | Nugget
+
+export function itemIsOperation(item: PromptItem): boolean {
+    return "op" in item;
+}
+
+export function itemIsNugget(item: PromptItem): boolean {
+    return !itemIsOperation(item);
+}
 
 export type Composition = Array<PromptItem>;
 
@@ -101,6 +109,51 @@ export function changeOperationOp(operationId: Id, op: Op) {
         }
         ),
     ]);
+}
+
+/**
+ * utility method to remove & return a prompt item by ID
+ * @param id PromptItem ID
+ */
+export function popPromptItem (id : Id) {
+    const found = $composition.get().find(item => item.id === id);
+    $composition.set($composition.get().filter(item => item.id !== id));
+    return found;
+}
+
+
+export function lassoNuggets (n1id : Id, n2id : Id, op : Op) {
+    const n1 = popPromptItem(n1id);
+    const n2 = popPromptItem(n2id);
+    $composition.set([...$composition.get(), {
+        id: uuidv4(),
+        op,
+        items: [n1, n2],
+    } as Operation])
+}
+
+export function addToOperation(nId : Id, opId : Id) {
+    const comp = $composition.get();
+    const nugget = comp.find(i => i.id === nId);
+    $composition.set($composition.get().map(i => {
+        if (![nId, opId].includes(i.id)) {
+            return i;
+        }
+        // if this is the nugget...
+        if (i.id === nId) {
+            return null;
+        }
+        // if this is the operation...
+        if (i.id == opId && "op" in i) {
+            return {
+                ...i,
+                items: [
+                    ...i.items, nugget
+                ]
+            }
+        }
+        return i;
+    }).filter(i => i != null) as Composition);
 }
 
 export function nuggetToText(nugget: Nugget) {

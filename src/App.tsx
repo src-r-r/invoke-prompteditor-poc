@@ -1,9 +1,12 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 import './App.css';
 import PromptComposer from './components/PromptComposer';
 import { Box, Tabs, Tab, Typography } from '@material-ui/core';
-import { $textComposition } from './lib/prompt';
+import { $composition, $library, $textComposition, Category, Composition, Library, LibraryItem, addItemToLibrary, insertIntoComposition, lassoNuggets } from './lib/prompt';
 import { TextPrompt } from './components/TextPrompt';
+import { useStore } from '@nanostores/react';
+import { Op } from './lib/operator';
+import { v4 as uuid4 } from 'uuid';
 
 
 interface TabPanelProps {
@@ -41,6 +44,30 @@ function a11yProps(index: number) {
 
 function App() {
   const [value, setValue] = React.useState(0);
+
+  const fillWithMockData = () => {
+    const libItems = [
+      { id: uuid4(), prompt: "cookie", category: Category.subject },
+      { id: uuid4(), prompt: "chocolate", category: Category.subject },
+      { id: uuid4(), prompt: "vintage photo", category: Category.vibes },
+    ] as Library;
+    const promptItems = [
+      {
+        id: uuid4(), items: [
+          { id: uuid4(), item: libItems[0] },
+          { id: uuid4(), item: libItems[1] },
+        ], op: Op.AND,
+      },
+      { id: uuid4(), item: libItems[2] },
+    ] as Composition;
+
+    $library.set(libItems);
+    $composition.set(promptItems);
+  }
+
+  useEffect(() => {
+    fillWithMockData();
+  }, []);
 
   const handleChange = (event: ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);

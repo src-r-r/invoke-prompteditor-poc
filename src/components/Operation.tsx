@@ -1,17 +1,20 @@
 import { Menu, MenuItem } from "@material-ui/core";
-import React, { Children, ReactNode } from 'react';
+import React, { Children, DragEvent, ReactNode, useEffect } from 'react';
 import "./Operation.css";
 import { Op } from "../lib/operator";
 import { v4 as randomUUID } from "uuid";
-import { Operation as OperationType, changeOperationOp } from "../lib/prompt";
+import { $composition, Operation as OperationType, changeOperationOp } from "../lib/prompt";
 import Nugget from "./Nugget";
+import { PromptItemProps } from "./PromptItem";
+import { useStore } from "@nanostores/react";
+import { $sourceItem, cancelDrop, completeDrop, startHoverOver } from "../store/prompt-dnd";
 
-interface OperationProps {
-  operation : OperationType
+interface OperationProps extends PromptItemProps {
+  operation: OperationType
 }
 
-function Operation(props : OperationProps) {
-  const {operation} = props;
+function Operation(props: OperationProps) {
+  const { operation, onDragStart, onDragOver, onDragEnd, onDrop, onMouseEnter, onMouseLeave } = props;
 
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -19,7 +22,44 @@ function Operation(props : OperationProps) {
   } | null>(null);
 
   const [id,] = React.useState(randomUUID);
+  const sourceItem = useStore($sourceItem);
+  const handleOnDragStart = () => {
+    onDragStart ? onDragStart(operation) : null;
+  }
 
+  const composition = useStore($composition);
+
+
+  const handleOnMouseEnter = () => {
+    if (!sourceItem) {
+      return;
+    }
+    startHoverOver(operation);
+  }
+
+
+  const handleOnMouseLeave = () => {
+    onMouseLeave ? onMouseLeave(operation) : null;
+  }
+
+  const handleOnDragOver = ($e: DragEvent) => {
+    if (!sourceItem) return;
+    // extract the prompt item's ID:
+    const targetId = $e.currentTarget.getAttribute("data-promptitem-id");
+    if (sourceItem.id == targetId) return;
+    console.log("current target id: %s", targetId);
+    const promptItem = composition.find(i => (targetId === i.id));
+    if (!promptItem) {
+      console.warn("Could not find promptitem with ID %s", targetId);
+      console.log(composition.map(c => c.id));
+      return;
+    }
+    startHoverOver(promptItem);
+  }
+
+  const handleOnDragEnd = () => {
+    completeDrop();
+  }
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     setContextMenu(
@@ -45,7 +85,17 @@ function Operation(props : OperationProps) {
   }
 
   return (
-    <div className="operation" onContextMenu={handleContextMenu}>
+    <div
+      draggable
+      onDragStart={handleOnDragStart}
+      onDragEnd={handleOnDragEnd}
+      onDragOver={handleOnDragOver}
+      onMouseEnter={handleOnMouseEnter}
+      onMouseOut={handleOnMouseLeave}
+      className="operation"
+      onContextMenu={handleContextMenu}
+      data-promptitem-id={operation.id}
+    >
       <div className="title">{operation.op}</div>
       <div className="nuggets">
         {
