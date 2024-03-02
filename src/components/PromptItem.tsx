@@ -14,9 +14,12 @@ import {PromptItem as PIType} from "../lib/prompt"
 
 export interface PromptItemProps {
     onDragStart?: (item : PIType) => void,
-    onDragEnd?: (item: PIType) => void,
+    onDragEnd?: () => void,
     onDragOver?: (item: PIType) => void,
     onDrop?: (item : PIType) => void,
     onMouseEnter?: (item : PIType) => void,
     onMouseLeave?: (item : PIType) => void,
+    onDelete : (item : PIType) => void,
 }
+
+export type EditorMode = "dnd" | "sort" | "score"

@@ -1,11 +1,5 @@
-.add-button {
-    position: absolute;
-    right: 10pt;
-    top: 10pt;
-}
-
-.prompt-item {
-    margin: 4pt;
-    padding: 2pt;
-    border-radius: 5pt;
+.composer-main {
+    padding-top: 30pt;
+    border-top: 1px solid black;
+    margin: 10pt;
 }

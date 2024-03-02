@@ -9,11 +9,15 @@
     display: inline-flex;
 }
 
-.nugget > .text, .nugget > .score, .nugget.buttons {
-    padding: 4pt;
-    display: inline-block;
+.nugget.child > .text, .nugget.child > .score, .nugget.child.buttons {
+    padding: 4pt 2pt;
+    display: inline-flex;
+}
+
+.nugget.toplevel {
+    align-items: center;
 }
 
 .nugget .buttons button {
-    max-height: 12pt;
+    max-height: 14pt;
 }

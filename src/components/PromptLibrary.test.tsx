@@ -25,6 +25,7 @@ const mockItem: LibItemType = {
 };
 
 const mockOnClose = jest.fn();
+const mockOnDeleteItem = jest.fn();
 
 const mockOpen: boolean = true;
 
@@ -32,6 +33,7 @@ const mockProps: SimpleDialogProps = {
     open: mockOpen,
     onInsertItem: mockOnAddItem,
     onClose: mockOnClose,
+    onDeleteItem: mockOnDeleteItem,
 };
 
 const mockLibrary: LibraryType = [

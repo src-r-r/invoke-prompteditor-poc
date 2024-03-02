@@ -7,5 +7,17 @@
 }
 
 .prompt-item.muted, .operation.muted .nugget {
-    color: gray;
+    opacity: 0.4;
+}
+
+.prompt-item {
+    display: inline-flex;
+    border-radius: 5pt;
+    padding: 2pt 0pt;
+    margin: 2pt 4pt;
+    align-items: center;
+}
+
+.prompt-item.toplevel {
+    height: 55px;
 }

@@ -1,17 +1,18 @@
-import { Button } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Container, Paper, Snackbar, Typography } from '@material-ui/core';
 import Masonry from '@mui/lab/Masonry';
 import AddIcon from '@mui/icons-material/Add';
 import "./PromptComposer.css";
 import { PromptLibrary } from './PromptLibrary';
 import React, { useEffect, useState } from 'react';
-import { $composition, $library, $slottedComposition, LibraryItem, PromptItem, addToOperation, insertIntoComposition, itemIsNugget, itemIsOperation, lassoNuggets, Composition } from '../lib/prompt';
-import { Category } from '@mui/icons-material';
+import { $composition, $library, $slottedComposition, LibraryItem, PromptItem, addToOperation, insertIntoComposition, itemIsNugget, itemIsOperation, lassoNuggets, Composition, _setComposition, removeItemFromLibrary, removeFromComposition, removeNuggetFromOperation } from '../lib/prompt';
+import { BackHand, Book, Category, DragHandle, LibraryBooks, MouseSharp, Score, Sort } from '@mui/icons-material';
 import { useStore } from '@nanostores/react'
 import Nugget from './Nugget';
-import { Stack } from '@mui/material';
+import { Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Op, Operation } from './Operation';
-import { PromptItemProps } from './PromptItem';
-import { $dragDropState, $dropCandidate, $isDragInProgress, $sourceItem, completeDrop, endHoverOver, startDrag, startHoverOver } from '../store/prompt-dnd';
+import { EditorMode, PromptItemProps } from './PromptItem';
+import { ReactSortable } from "react-sortablejs";
+import { $dragDropState, $dropCandidate, $isDragInProgress, $sourceItem, CategoryMismatchError, completeDrop, endHoverOver, startDrag, startHoverOver } from '../store/prompt-dnd';
 
 export interface PromptComposerProps {
 
@@ -21,11 +22,11 @@ export default function PromptComposer(props: PromptComposerProps) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
-    setOpen(true);
+    if (!open) { setOpen(true); }
   };
 
   const handleClose = () => {
-    setOpen(false);
+    if (open) { setOpen(false); }
   };
 
   const composition = useStore($composition);
@@ -37,6 +38,31 @@ export default function PromptComposer(props: PromptComposerProps) {
     insertIntoComposition(item);
     console.log(composition)
   }
+
+  const handleOnDeleteItem = (item: LibraryItem) => {
+    removeItemFromLibrary(item);
+    // also remove from the prompts
+    composition.filter(c => {
+      return (!("op" in c)) && c.item.id === item.id
+    }).forEach((c) => {
+      removeFromComposition(c);
+    });
+    // and from any operation
+    composition.filter(c => {
+      return "op" in c && c.items.find(o => o.item.id === item.id);
+    }).forEach((o) => {
+      if (!("op" in o)) return;
+      o.items.forEach((i) => {
+        if (i.item.id === item.id) removeNuggetFromOperation(o, i);
+      })
+    })
+  }
+
+  const [doSort, setDoSort] = useState(false);
+
+  const [editMode, setEditMode] = useState("dnd" as EditorMode);
+
+  const [error, setError] = useState(null as Error | null);
 
   /**
    * 
@@ -51,12 +77,14 @@ export default function PromptComposer(props: PromptComposerProps) {
     // is either a Nugget or an Operation.
     const callbacks = {
       onDragStart: (item: PromptItem) => {
+        if (editMode !== "dnd") return;
         if (itemIsNugget(promptItem)) {
           startDrag(item);
         }
         // TODO: operation
       },
       onDrop: (item: PromptItem) => {
+        if (editMode !== "dnd") return;
         const dnd = useStore($dragDropState);
         const isDragInProgress = useStore($isDragInProgress);
         const dropCandidate = useStore($dropCandidate);
@@ -73,13 +101,26 @@ export default function PromptComposer(props: PromptComposerProps) {
         }
         completeDrop();
       },
-      onDragEnd: (item: PromptItem) => {
-
+      onDragEnd: () => {
+        try {
+          completeDrop();
+        } catch (err) {
+          if (err instanceof CategoryMismatchError) {
+            setError(err);
+          } else {
+            throw err;
+          }
+        }
       },
       onMouseEnter: (item: PromptItem) => {
       },
       onMouseLeave: (item: PromptItem) => {
+        if (editMode !== "dnd") return;
         endHoverOver();
+      },
+      onDelete: (item: PromptItem) => {
+        if (editMode !== "dnd") return;
+        removeFromComposition(item);
       },
     } as PromptItemProps;
 
@@ -88,23 +129,73 @@ export default function PromptComposer(props: PromptComposerProps) {
       : <Nugget nugget={promptItem} key={key} isTopLevel={true} {...callbacks} />)
   }
 
+  function setComposition(c: Composition) {
+    console.log("updated composition: %x", c)
+    _setComposition(c);
+  }
+
+  const handleSetEditMode = (
+    event: React.MouseEvent<HTMLElement>,
+    mode: EditorMode | null,
+  ) => {
+    if (mode) setEditMode(mode);
+  };
+
+  const handleErrorSnackbarClose = () => {
+    setError(null);
+  }
+
+
   return (
-    <div>
-      <div>
-        <Button className="add-button" onClick={handleClickOpen}>
-          <AddIcon />
-          <PromptLibrary
-            open={open}
-            onInsertItem={handleOnInsertItem}
-            onClose={handleClose}
-          ></PromptLibrary>
-        </Button>
-      </div>
-      <div>
-        {
-          composition.map(c => promptItemFactory(c, `item-${c.id}`))
+    <Box>
+      <Container>
+        <Stack direction="row" style={{ padding: "4pt" }} >
+          <ButtonGroup>
+            <Button onClick={handleClickOpen} >
+              <LibraryBooks />
+            </Button>
+          </ButtonGroup>
+          <ToggleButtonGroup
+            value={editMode}
+            exclusive
+            onChange={handleSetEditMode}
+            size="large"
+          >
+            <ToggleButton value="dnd" aria-label="drag-n-drop" size="large" style={{ padding: "4pt" }}>
+              <BackHand />
+            </ToggleButton>
+            <ToggleButton value="sort" aria-label='score' style={{ padding: "4pt" }}>
+              <Sort />
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <Typography>
+            <strong>{editMode} Mode</strong> enabled
+          </Typography>
+        </Stack>
+      </Container>
+      <Container className="composer-main">
+        {editMode == "sort" ? (
+          <ReactSortable list={composition} setList={setComposition}>
+            {composition.map(c => promptItemFactory(c, `item-${c.id}`))}
+          </ReactSortable>
+        ) : composition.map(c => promptItemFactory(c, `item-${c.id}`))
         }
-      </div>
-    </div>
+      </Container>
+      <PromptLibrary
+        open={open}
+        onDeleteItem={handleOnDeleteItem}
+        onInsertItem={handleOnInsertItem}
+        onClose={handleClose} />
+      <Snackbar
+        message={error?.message}
+        open={error !== null}
+        autoHideDuration={6000}
+        onClose={handleErrorSnackbarClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      />
+    </Box>
   );
 }

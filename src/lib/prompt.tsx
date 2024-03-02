@@ -1,6 +1,6 @@
 import { v4 as randomUUID, v4 as uuidv4 } from "uuid";
 import { Op } from "./operator";
-import { Atom, ReadableAtom, Store, WritableAtom, atom, computed } from "nanostores";
+import { atom, computed } from "nanostores";
 
 type Id = string;
 
@@ -73,7 +73,7 @@ export function removeItemFromLibrary(item: LibraryItem) {
     $library.set($library.get().filter(i => (i.id !== item.id)));
 }
 
-export const $composition = atom<Composition>([])
+export const $composition = atom<Composition>([]);
 
 export function insertIntoComposition(item: LibraryItem) {
     $composition.set([
@@ -91,8 +91,19 @@ export function removeFromComposition(item: PromptItem) {
 function nuggetDelta(nuggetId: Id, delta: number) {
     $composition.set($composition.get().map(item => {
         if ((item.id === nuggetId) && ("score" in item)) {
-            const o = { ...item, score: item.score + delta };
-            return o;
+            return { ...item, score: item.score + delta };
+        }
+        if ("op" in item) {
+            return {
+                ...item, items: item.items.map(
+                    nug => {
+                        return {
+                            ...nug,
+                            score: nug.score + (nuggetId === nug.id ? delta : 0),
+                        }
+                    }
+                )
+            }
         }
         return item;
     }
@@ -227,4 +238,29 @@ export function togglePromptItemMute(id: Id) {
             } : c;
         }
     ));
+}
+
+export function _setComposition(newComp: Composition) {
+    $composition.set(newComp);
+}
+
+export function removeNuggetFromOperation(operation: Operation, nugget: Nugget) {
+    $composition.set($composition.get().map(item => {
+        return "op" in item ? {
+            ...item,
+            items: item.items.filter(i => i.id !== nugget.id),
+        } : item;
+    }))
+};
+
+export function unlassooOperation(operation: Operation) {
+    $composition.set(
+        $composition.get().flatMap(item => {
+            if ("op" in item && item.id === operation.id) {
+                return item.items;
+            } else {
+                return [item];
+            }
+        })
+    )
 }

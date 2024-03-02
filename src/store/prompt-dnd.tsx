@@ -1,5 +1,5 @@
 import { Atom, atom, computed } from "nanostores"
-import { $composition, Nugget, Operation, PromptItem, addToOperation, itemIsNugget, itemIsOperation, lassoNuggets } from "../lib/prompt";
+import { $composition, Category, Nugget, Operation, PromptItem, addToOperation, itemIsNugget, itemIsOperation, lassoNuggets } from "../lib/prompt";
 import { Op } from "../lib/operator";
 
 export type DropCandidate = string | string []
@@ -55,6 +55,12 @@ export function cancelDrop() {
     $dragDropState.set({});
 };
 
+export class CategoryMismatchError extends Error {
+    constructor(public c1 : Category, public c2 : Category) {
+        super(`Cannot merge '${c1}' into '${c2}'`);
+    }
+}
+
 export function completeDrop() {
     const source = $sourceItem.get();
     const target = $dropCandidate.get();
@@ -65,7 +71,7 @@ export function completeDrop() {
         const c1 = nSource.item.category;
         const c2 = nTarget.items[0].item.category;
         if (c1 != c2) {
-            console.error("Category mismatch: cannot drop a %s into %s", c1, c2);
+            throw new CategoryMismatchError(c1, c2);
         } else {
             addToOperation(source.id, target.id);
         }
@@ -76,7 +82,7 @@ export function completeDrop() {
         const c1 = nSource.item.category;
         const c2 = nTarget.item.category;
         if (c1 != c2) {
-            console.error("Category mismatch: cannot drop a %s into %s", c1, c2);
+            throw new CategoryMismatchError(c1, c2);
         } else {
             lassoNuggets(source.id, target.id, Op.AND)
         }

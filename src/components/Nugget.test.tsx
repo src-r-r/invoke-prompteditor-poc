@@ -14,7 +14,8 @@ const nugget: NuggetType = {
 };
 
 test('renders Nugget component', () => {
-    render(<Nugget nugget={nugget} />);
+    render(<Nugget nugget={nugget} 
+        onDelete={i => {}} />);
     const textElement = screen.getByText(nugget.item.prompt);
     expect(textElement).toBeInTheDocument();
 });
@@ -25,6 +26,7 @@ test('increases score when button is clicked', () => {
     const { rerender } = render(
         <Nugget
             nugget={nugget}
+            onDelete={i => {}}
         />
     );
     const increaseButton = screen.getByLabelText('incScore');
@@ -32,6 +34,7 @@ test('increases score when button is clicked', () => {
     rerender(
         <Nugget
             nugget={{ ...nugget, score: nugget.score + 1 }}
+            onDelete={i => {}}
         />
     );
     // expect(increaseScore).toHaveBeenCalledTimes(1);
@@ -44,6 +47,7 @@ test('decreases score when button is clicked', () => {
     const { rerender } = render(
         <Nugget
             nugget={nugget}
+            onDelete={i => {}}
         />
     );
     const decreaseButton = screen.getByLabelText('decScore');
@@ -51,6 +55,7 @@ test('decreases score when button is clicked', () => {
     rerender(
         <Nugget
             nugget={{ ...nugget, score: nugget.score - 1 }}
+            onDelete={i => {}}
         />
     );
     // expect(decreaseScore).toHaveBeenCalledTimes(1);

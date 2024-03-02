@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogTitle } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
 import { LibraryItem as LibItemType, $library, Category, LibraryItem, insertIntoComposition } from "../lib/prompt";
 import { MouseEvent, useMemo, useState } from "react";
 import { useStore } from "@nanostores/react";
@@ -6,18 +6,19 @@ import { NewLibraryItem } from "./NewLibraryItem";
 import { DataGrid, GridApi, GridColDef, GridColTypeDef } from '@mui/x-data-grid';
 import "./PromptLibrary.css"
 import { title } from "../lib/util";
-import { Add } from "@mui/icons-material";
+import { Add, Delete } from "@mui/icons-material";
 
 export interface SimpleDialogProps {
     open: boolean;
     onClose: () => void,
     // onAddItem: (item: LibItemType) => void,
     onInsertItem: (item: LibItemType) => void,
+    onDeleteItem: (item: LibItemType) => void,
 }
 
 
 export function PromptLibrary(props: SimpleDialogProps) {
-    const { open, onInsertItem, onClose } = props;
+    const { open, onInsertItem, onClose, onDeleteItem } = props;
 
     const library = useStore($library);
 
@@ -54,11 +55,23 @@ export function PromptLibrary(props: SimpleDialogProps) {
                         <Add />
                     </Button>
                 );
-            }
+            }, headerName: "",
         },
         { field: 'name', headerName: 'Name', width: 150 },
         { field: 'prompt', headerName: 'Prompt', width: 250 },
         { field: 'category', headerName: 'Category', width: 150 },
+        { field: "delete", headerName: "headerName", width: 50, renderCell: (params) => {
+            const handleClick = ($e: MouseEvent<any>) => {
+                $e.stopPropagation();
+                const libItem = library.find(l => l.id === params.id) as LibItemType;
+                if (libItem) onDeleteItem(libItem);
+            }
+            return (
+                <Button onClick={handleClick}>
+                    <Delete />
+                </Button>
+            );
+        } },
     ];
 
     const rows = filteredLibrary.map(item => ({
@@ -72,16 +85,22 @@ export function PromptLibrary(props: SimpleDialogProps) {
         <Dialog
             hideBackdrop
             disableEnforceFocus
-            style={{ position: "initial", top: "30%", left: "30%", height: "fit-content", width: "fit-content" }}
+            fullWidth={true}
+            maxWidth="lg"
             className="prompt-library-dialog"
             onClose={handleClose}
             open={open}
         >
             <DialogTitle>Prompt Library</DialogTitle>
             <div>
-                <DataGrid rows={rows} columns={columns} />
+                <DataGrid rows={rows} columns={columns} style={{display: "block", width: "fit-contents"}} />
             </div>
             <NewLibraryItem onNewCreated={handleOnNewCreated} />
+            <DialogActions>
+                <Button autoFocus onClick={handleClose}>
+                    Close
+                </Button>
+            </DialogActions>
         </Dialog>
     );
 }

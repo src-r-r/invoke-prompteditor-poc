@@ -1,14 +1,13 @@
 import { Button, ButtonGroup, Chip, Divider } from '@material-ui/core';
 import React, { Component, DragEvent, useEffect, useState } from 'react';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowUp';
+import {KeyboardArrowUp, KeyboardArrowDown} from '@mui/icons-material';
 import { $composition, Nugget as NuggetType, decreaseNuggetScore, increaseNuggetScore, togglePromptItemMute } from '../lib/prompt';
 import "./Nugget.css";
 import "./PromptItem.css"
 import { $sourceItem, cancelDrop, completeDrop, isPromptItemDropTarget, startDrag, startHoverOver } from '../store/prompt-dnd';
 import { PromptItemProps } from './PromptItem';
 import { useStore } from '@nanostores/react';
-import { VolumeMute, VolumeOff, VolumeUp } from '@mui/icons-material';
+import { ArrowDownward, Delete, TextDecrease, VolumeMute, VolumeOff, VolumeUp } from '@mui/icons-material';
 
 export interface NuggetProps extends PromptItemProps {
     nugget: NuggetType,
@@ -19,8 +18,10 @@ export default function Nugget(props: NuggetProps) {
 
     const { nugget,
         onDragStart,
+        onDragEnd,
         onMouseLeave,
         isTopLevel,
+        onDelete,
     } = props;
 
     const scoreDisp = nugget.score > 0 ? "+" + nugget.score : nugget.score;
@@ -37,7 +38,12 @@ export default function Nugget(props: NuggetProps) {
 
     console.log("nugget classname: %s", className);
 
-    const handleOnDragStart = () => {
+    const handleOnDragStart = (e: DragEvent) => {
+        if ("checkForDrag" in window) {
+            if (Math.abs((window.checkForDrag as number) - e.clientX) < 5) {
+                return e.stopPropagation();
+            }
+        }
         onDragStart ? onDragStart(nugget) : null;
     }
 
@@ -68,11 +74,29 @@ export default function Nugget(props: NuggetProps) {
     }
 
     const handleOnDragEnd = () => {
-        completeDrop();
+        if (onDragEnd) onDragEnd();
+    }
+
+    const handleDelete = () => {
+        onDelete(nugget);
+    }
+
+    const mouseDownCoords = (e: MouseEvent) => {
+        (window as any).checkForDrag = e.clientX;
+    }
+
+    const handleIncClick = () => {
+        console.log("decrease %s", nugget.id);
+        increaseNuggetScore(nugget.id);
+    }
+
+    const handleDecClick = () => {
+        console.log("increase %s", nugget.id);
+        decreaseNuggetScore(nugget.id);
     }
 
     return (
-        <div
+        <li
             className={className}
             id={thisId}
             draggable
@@ -83,26 +107,32 @@ export default function Nugget(props: NuggetProps) {
             onMouseOut={handleOnMouseLeave}
             data-promptitem-id={nugget.id}
         >
+            {isTopLevel && (<span className='delete'>
+                <Button onClick={handleDelete}>
+                    <Delete />
+                </Button>
+            </span>)
+            }
             <span className='text'>{nugget.item.name || nugget.item.prompt}</span>
             <Divider orientation="vertical" variant="middle" flexItem />
             <span className='score'>{scoreDisp}</span>
             <span className='buttons'>
                 <ButtonGroup size="small" orientation='vertical'>
-                    <Button onClick={() => increaseNuggetScore(nugget.id)} className='incScore' aria-label="incScore">
-                        <KeyboardArrowUpIcon />
+                    <Button onClick={handleIncClick} className='incScore' aria-label="incScore">
+                        <KeyboardArrowUp />
                     </Button>
-                    <Button onClick={() => decreaseNuggetScore(nugget.id)} className='decScore' aria-label='decScore'>
-                        <KeyboardArrowDownIcon />
+                    <Button onClick={handleDecClick} className='decScore' aria-label='decScore'>
+                        <KeyboardArrowDown />
                     </Button>
                 </ButtonGroup>
             </span>
             {isTopLevel &&
                 <span className='hide'>
                     <Button onClick={() => togglePromptItemMute(nugget.id)}>
-                        {nugget.muted ?  <VolumeUp /> : <VolumeOff /> }
+                        {nugget.muted ? <VolumeUp /> : <VolumeOff />}
                     </Button>
                 </span>
             }
-        </div>
+        </li>
     );
 }

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect } from 'react';
 import './App.css';
 import PromptComposer from './components/PromptComposer';
-import { Box, Tabs, Tab, Typography, Container } from '@material-ui/core';
+import { Box, Tabs, Tab, Typography, Container, Paper } from '@material-ui/core';
 import { $composition, $library, $textComposition, Category, Composition, Library, LibraryItem, addItemToLibrary, insertIntoComposition, lassoNuggets } from './lib/prompt';
 import { TextPrompt } from './components/TextPrompt';
 import { useStore } from '@nanostores/react';
@@ -72,7 +72,7 @@ function App() {
     setValue(newValue);
   };
   return (
-    <Container>
+    <Paper>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="prompt-selection-tabs">
           <Tab label="Prompt Composer" {...a11yProps(0)} aria-label="prompt-composer-tab" />
@@ -85,7 +85,7 @@ function App() {
       <CustomTabPanel value={value} index={1}>
         <TextPrompt />
       </CustomTabPanel>
-    </Container>
+    </Paper>
   );
 }
 

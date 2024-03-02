@@ -64,16 +64,18 @@ export function NewLibraryItem(props: NewLibraryItemProps) {
                     ))}
                 </Select>
             </FormControl>
-            <FormControl>
-                <InputLabel id="name-textfield-label">Name</InputLabel>
-                <TextField
-                    itemID="name-textfield-label"
-                    id="name-textfield"
-                    value={name}
-                    onChange={handleNameChange}
-                    hidden={category === Category.subject || category === Category.medium}
-                />
-            </FormControl>
+            {categoryHasName(category) && (
+                <FormControl>
+                    <InputLabel id="name-textfield-label">Name</InputLabel>
+                    <TextField
+                        itemID="name-textfield-label"
+                        id="name-textfield"
+                        value={name}
+                        onChange={handleNameChange}
+                    />
+                </FormControl>
+            )
+            }
             <FormControl>
                 <InputLabel id="prompt-textfield-label">Prompt</InputLabel>
                 <TextField

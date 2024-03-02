@@ -3,19 +3,19 @@ import React, { Children, DragEvent, ReactNode, useEffect } from 'react';
 import "./Operation.css";
 import { Op } from "../lib/operator";
 import { v4 as randomUUID } from "uuid";
-import { $composition, Operation as OperationType, changeOperationOp, togglePromptItemMute } from "../lib/prompt";
+import { $composition, Category, Operation as OperationType, changeOperationOp, togglePromptItemMute, unlassooOperation } from "../lib/prompt";
 import Nugget from "./Nugget";
 import { PromptItemProps } from "./PromptItem";
 import { useStore } from "@nanostores/react";
 import { $sourceItem, cancelDrop, completeDrop, startHoverOver } from "../store/prompt-dnd";
-import { VolumeUp, VolumeOff } from "@mui/icons-material";
+import { VolumeUp, VolumeOff, Delete, Add, RotateLeftOutlined, Shuffle, Repeat, ArrowOutward } from "@mui/icons-material";
 
 interface OperationProps extends PromptItemProps {
   operation: OperationType
 }
 
 function Operation(props: OperationProps) {
-  const { operation, onDragStart, onDragOver, onDragEnd, onDrop, onMouseEnter, onMouseLeave } = props;
+  const { operation, onDragStart, onDragOver, onDragEnd, onDrop, onMouseEnter, onDelete, onMouseLeave } = props;
 
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -59,7 +59,7 @@ function Operation(props: OperationProps) {
   }
 
   const handleOnDragEnd = () => {
-    completeDrop();
+    if (onDragEnd) onDragEnd();
   }
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -80,6 +80,10 @@ function Operation(props: OperationProps) {
     setContextMenu(null);
   };
 
+  const handleDelete = () => {
+    onDelete(operation);
+  }
+
   const changeOperator = (opV: string) => {
     changeOperationOp(operation.id, opV as Op);
     handleClose();
@@ -94,9 +98,23 @@ function Operation(props: OperationProps) {
 
   console.log("operation classname: %s", className);
 
+  const handleUngroup = () => {
+    unlassooOperation(operation);
+  }
+
+  const getCategoryIcon = () => {
+    return {
+      [Op.AND]: (<Add />),
+      [Op.JOINED]: (<Add />),
+      [Op.SWAP]: (<Shuffle />),
+      [Op.SWAPPED]: (<Shuffle />),
+      [Op.BLEND]: (<Repeat />),
+      [Op.BLENDED]: (<Repeat />),
+    }[operation.op];
+  }
 
   return (
-    <div
+    <li
       draggable
       onDragStart={handleOnDragStart}
       onDragEnd={handleOnDragEnd}
@@ -107,11 +125,21 @@ function Operation(props: OperationProps) {
       onContextMenu={handleContextMenu}
       data-promptitem-id={operation.id}
     >
+      <span className='delete'>
+        <Button onClick={handleDelete}>
+          <Delete />
+        </Button>
+      </span>
       <div className="title">{operation.op}</div>
       <div className="nuggets">
         {
-          operation.items.map(nugget => {
-            return <Nugget nugget={nugget} isTopLevel={false} />
+          operation.items.map((nugget, i) => {
+            return (
+              <>
+                <Nugget nugget={nugget} isTopLevel={false} onDelete={i => { }} />
+                {i < operation.items.length-1 && (<span className="op-icon">{getCategoryIcon()}</span>)}
+              </>
+            )
           })
         }
       </div>
@@ -135,8 +163,11 @@ function Operation(props: OperationProps) {
             <MenuItem onClick={() => changeOperator(v)}>{v}</MenuItem>
           )
         })}
+        <MenuItem onClick={handleUngroup}>
+          Ungroup
+        </MenuItem>
       </Menu>
-    </div>
+    </li>
   );
 }
 
