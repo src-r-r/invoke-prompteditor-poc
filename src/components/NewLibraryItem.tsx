@@ -1,8 +1,10 @@
-import { Button, Container, FormControl, InputLabel, MenuItem, Table, TableRow, TextField } from "@material-ui/core";
+import { Button, Container, FormControl, InputLabel, TextField } from "@material-ui/core";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Category, LibraryItem, addItemToLibrary, categoryHasName } from "../lib/prompt";
 import { ChangeEvent, useState } from "react";
 import { v4 as uuidv4 } from "uuid"
+import { Stack } from "@mui/material";
+import "./NewLibraryItem.css"
 
 export interface NewLibraryItemProps {
     onNewCreated?: () => void;
@@ -47,27 +49,43 @@ export function NewLibraryItem(props: NewLibraryItemProps) {
 
     return (
         <Container className="new-item-form">
-            <FormControl onSubmitCapture={handleCreateItem}>
-                <InputLabel htmlFor="new-prompt-category">Category</InputLabel>
+            <FormControl>
+                <InputLabel id="category-select-label">Category</InputLabel>
                 <Select
                     native
-                    id="new-prompt-category"
-                    aria-label="Prompt Item Category"
+                    labelId="category-select-label"
+                    id="category-select"
                     value={category}
-                    onChange={(e) => handleCategoryChange(e)}
+                    label="Category"
+                    onChange={handleCategoryChange}
                 >
-                    {catChoices.map(cat => (
-                        <option value={cat} id={cat} key={cat}>{titleCase(cat)}</option>
+                    {catChoices.map(c => (
+                        <option key={c} value={c}>{titleCase(c)}</option>
                     ))}
                 </Select>
-                {categoryHasName(category) && <>
-                    <InputLabel htmlFor="name">Name</InputLabel>
-                    <TextField aria-label="Prompt Item Name" value={name} onChange={handleNameChange} id="name" />
-                </>}
-                <InputLabel htmlFor="prompt">Prompt</InputLabel>
-                <TextField aria-label="Prompt Item Text" value={prompt} onChange={handlePromptChange} id="prompt" />
-                <Button onClick={handleCreateItem} >Create</Button>
             </FormControl>
+            <FormControl>
+                <InputLabel id="name-textfield-label">Name</InputLabel>
+                <TextField
+                    itemID="name-textfield-label"
+                    id="name-textfield"
+                    value={name}
+                    onChange={handleNameChange}
+                    hidden={category === Category.subject || category === Category.medium}
+                />
+            </FormControl>
+            <FormControl>
+                <InputLabel id="prompt-textfield-label">Prompt</InputLabel>
+                <TextField
+                    itemID="prompt-textfield-label"
+                    id="prompt-textfield"
+                    value={prompt}
+                    onChange={handlePromptChange}
+                />
+            </FormControl>
+            <Stack direction="row" spacing={2}>
+                <Button variant="contained" onClick={handleCreateItem}>Create</Button>
+            </Stack>
         </Container>
     )
 }

@@ -57,7 +57,7 @@ export function itemIsNugget(item: PromptItem): boolean {
 
 export type Composition = Array<PromptItem>;
 
-export const $library = atom<Library>([])
+export const $library = atom<Library>([]);
 
 export function addItemToLibrary(item: LibraryItem) {
     $library.set([

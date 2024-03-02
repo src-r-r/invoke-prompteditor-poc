@@ -18,10 +18,6 @@ export default function Nugget(props: NuggetProps) {
 
     const { nugget,
         onDragStart,
-        onDragOver,
-        onDragEnd,
-        onDrop,
-        onMouseEnter,
         onMouseLeave,
         isTopLevel,
     } = props;

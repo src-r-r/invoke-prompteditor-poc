@@ -1,11 +1,12 @@
-import { Button, Checkbox, Dialog, DialogTitle } from "@material-ui/core";
-import { LibraryItem as LibItemType, $library, Category } from "../lib/prompt";
-import { LibraryItem } from "./LibraryItem";
-import { ChangeEvent, useState } from "react";
+import { Button, Dialog, DialogTitle } from "@material-ui/core";
+import { LibraryItem as LibItemType, $library, Category, LibraryItem, insertIntoComposition } from "../lib/prompt";
+import { MouseEvent, useMemo, useState } from "react";
 import { useStore } from "@nanostores/react";
-import { ExitToAppOutlined } from "@mui/icons-material";
 import { NewLibraryItem } from "./NewLibraryItem";
+import { DataGrid, GridApi, GridColDef, GridColTypeDef } from '@mui/x-data-grid';
 import "./PromptLibrary.css"
+import { title } from "../lib/util";
+import { Add } from "@mui/icons-material";
 
 export interface SimpleDialogProps {
     open: boolean;
@@ -14,18 +15,6 @@ export interface SimpleDialogProps {
     onInsertItem: (item: LibItemType) => void,
 }
 
-function title(text: string) {
-    return (!text.length) ? "" : ((text.length === 1) ? text.toUpperCase() : text[0].toUpperCase() + text.substring(1).toLowerCase());
-}
-
-
-const hide = ($el: Element) => {
-    if (!$el.classList.contains("hidden")) $el.classList.add("hidden");
-}
-
-const show = ($el: Element) => {
-    if (!$el.classList.contains("hidden")) $el.classList.remove("hidden");
-}
 
 export function PromptLibrary(props: SimpleDialogProps) {
     const { open, onInsertItem, onClose } = props;
@@ -35,33 +24,6 @@ export function PromptLibrary(props: SimpleDialogProps) {
     const [doCreate, setDoCreate] = useState(false);
 
     const [visibleCategories, setVisibleCategories] = useState(Object.keys(Category) as Category[]);
-
-    const handleOnAddItem = (item: LibItemType) => {
-        // onAddItem(item);
-    }
-
-    const handleOnInsertItem = (item: LibItemType) => {
-        onInsertItem(item);
-    }
-
-    const filterCat = (catKey: string) => {
-        document.querySelectorAll(`.library-item`).forEach($el => {
-            console.log("Found %x", $el);
-            show($el);
-        });
-        if (visibleCategories.includes(catKey as Category)) {
-            setVisibleCategories(visibleCategories.filter((v) => v !== catKey));
-        } else {
-            setVisibleCategories([...visibleCategories, catKey as Category]);
-        }
-        console.log(visibleCategories);
-        document.querySelectorAll(`.library-item`).forEach($el => {
-            Object.keys(Category).forEach(c => {
-                if (c in visibleCategories) show($el)
-                else hide($el)
-            })
-        });
-    }
 
     const handleClose = () => {
         onClose();
@@ -73,28 +35,46 @@ export function PromptLibrary(props: SimpleDialogProps) {
 
     const categoryChoices = Object.keys(Category);
 
+    const filteredLibrary = useMemo(() => {
+        return library.filter(item => visibleCategories.includes(item.category));
+    }, [library, visibleCategories]);
+
+    const columns: GridColDef[] = [
+        {
+            field: "insertPrompt", width: 50, renderCell: (params) => {
+                const handleClick = ($e: MouseEvent<any>) => {
+                    console.log(`clicked!`);
+                    $e.stopPropagation();
+                    const libItem = library.find(l => l.id === params.id) as LibItemType;
+                    console.log("Inserting %o into composition", libItem);
+                    libItem ?? onInsertItem(libItem);
+                }
+                return (
+                    <Button onClick={handleClick}>
+                        <Add />
+                    </Button>
+                );
+            }
+        },
+        { field: 'name', headerName: 'Name', width: 150 },
+        { field: 'prompt', headerName: 'Prompt', width: 250 },
+        { field: 'category', headerName: 'Category', width: 150 },
+    ];
+
+    const rows = filteredLibrary.map(item => ({
+        id: item.id,
+        name: item.name || "",
+        prompt: item.prompt,
+        category: title(item.category),
+    }));
+
     return (
         <Dialog className="prompt-library-dialog" onClose={handleClose} open={open}>
             <DialogTitle>Prompt Library</DialogTitle>
-            <div className="categories">
-                {categoryChoices.map(catKey => {
-                    return (
-                        <div key={catKey} onMouseDown={() => filterCat(catKey)}>
-                            <Checkbox checked={visibleCategories.includes(catKey as Category)} />
-                            <span>{title(catKey)}</span>
-                        </div>
-                    )
-                })}
-            </div>
             <div>
-                {
-                    library?.map(item => <LibraryItem key={item.id} item={item} onInsertItem={handleOnInsertItem} />)
-                }
+                <DataGrid rows={rows} columns={columns} />
             </div>
-            <div>
-                <Button onClick={() => setDoCreate(true)}>Create</Button>
-            </div>
-            {doCreate ? (<NewLibraryItem onNewCreated={handleOnNewCreated} />) : (<></>)}
+            <NewLibraryItem onNewCreated={handleOnNewCreated} />
         </Dialog>
     );
 }

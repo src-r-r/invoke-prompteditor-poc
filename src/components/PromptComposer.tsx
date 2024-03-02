@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import "./PromptComposer.css";
 import { PromptLibrary } from './PromptLibrary';
 import React, { useEffect, useState } from 'react';
-import { $slottedComposition, LibraryItem, PromptItem, addToOperation, insertIntoComposition, itemIsNugget, itemIsOperation, lassoNuggets } from '../lib/prompt';
+import { $composition, $library, $slottedComposition, LibraryItem, PromptItem, addToOperation, insertIntoComposition, itemIsNugget, itemIsOperation, lassoNuggets, Composition } from '../lib/prompt';
 import { Category } from '@mui/icons-material';
 import { useStore } from '@nanostores/react'
 import Nugget from './Nugget';
@@ -18,7 +18,7 @@ export interface PromptComposerProps {
 }
 
 export default function PromptComposer(props: PromptComposerProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -32,10 +32,28 @@ export default function PromptComposer(props: PromptComposerProps) {
     insertIntoComposition(item);
   }
 
-  const slottedComposition = useStore($slottedComposition);
+  
+  // const composition = useStore($composition);
+  const [composition, setComposition] = useState($composition.get())
+  useEffect(() => {
+    $composition.subscribe((comp) => {
+      console.log("composition changed!");
+      setComposition(comp as Composition);
+    });
+    console.log("subscribe -- composition")
+  })
 
+  /**
+   * 
+   * @param promptItem The prompt item that we're rendering
+   * @param key The key
+   * @returns Either a Nugget or an Operation component, relating to their native types.
+   */
   const promptItemFactory = (promptItem: PromptItem, key: string) => {
 
+    // These callbacks are mostly for drag-n-drop functionality.
+    // they will be different based on whether the source or target
+    // is either a Nugget or an Operation.
     const callbacks = {
       onDragStart: (item: PromptItem) => {
         if (itemIsNugget(promptItem)) {
@@ -61,7 +79,7 @@ export default function PromptComposer(props: PromptComposerProps) {
         completeDrop();
       },
       onDragEnd: (item: PromptItem) => {
-        
+
       },
       onMouseEnter: (item: PromptItem) => {
       },
@@ -89,11 +107,7 @@ export default function PromptComposer(props: PromptComposerProps) {
       </div>
       <div>
         {
-          slottedComposition.map((itemCol, i) => (
-            <>
-              {itemCol.map((promptItem, j) => promptItemFactory(promptItem, `item-${j}-${j}`))}
-            </>
-          ))
+          composition.map(c => promptItemFactory(c, `item-${c.id}`))
         }
       </div>
     </div>

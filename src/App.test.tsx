@@ -4,7 +4,7 @@ import App from './App';
 
 test('renders Prompt Composer tab', () => {
   render(<App />);
-  const tab = screen.getByText('prompt-composer-tab');
+  const tab = screen.getByLabelText('prompt-composer-tab');
   expect(tab).toBeInTheDocument();
 });
 

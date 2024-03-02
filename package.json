@@ -9,6 +9,7 @@
     "@mui/icons-material": "^5.15.10",
     "@mui/lab": "5.0.0-alpha.166",
     "@mui/material": "^5.15.10",
+    "@mui/x-data-grid": "^6.19.5",
     "@nano-sql/core": "^2.3.7",
     "@nanostores/react": "^0.7.2",
     "@reduxjs/toolkit": "^2.2.1",

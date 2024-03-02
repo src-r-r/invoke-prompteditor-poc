@@ -79,5 +79,5 @@ export function completeDrop() {
             lassoNuggets(source.id, target.id, Op.AND)
         }
     }
-    cancelDrop();
+    $dragDropState.set({});
 }
