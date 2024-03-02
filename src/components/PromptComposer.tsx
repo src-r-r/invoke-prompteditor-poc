@@ -18,7 +18,7 @@ export interface PromptComposerProps {
 }
 
 export default function PromptComposer(props: PromptComposerProps) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -28,20 +28,15 @@ export default function PromptComposer(props: PromptComposerProps) {
     setOpen(false);
   };
 
-  const handleOnInsertItem = (item: LibraryItem) => {
-    insertIntoComposition(item);
-  }
+  const composition = useStore($composition);
 
-  
-  // const composition = useStore($composition);
-  const [composition, setComposition] = useState($composition.get())
-  useEffect(() => {
-    $composition.subscribe((comp) => {
-      console.log("composition changed!");
-      setComposition(comp as Composition);
-    });
-    console.log("subscribe -- composition")
-  })
+  // const [composition, setComposition] = useState(compStore);
+
+  const handleOnInsertItem = (item: LibraryItem) => {
+    console.log("INSERT %x INTO %s", item, composition)
+    insertIntoComposition(item);
+    console.log(composition)
+  }
 
   /**
    * 

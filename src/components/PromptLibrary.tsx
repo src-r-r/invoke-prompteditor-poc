@@ -47,7 +47,7 @@ export function PromptLibrary(props: SimpleDialogProps) {
                     $e.stopPropagation();
                     const libItem = library.find(l => l.id === params.id) as LibItemType;
                     console.log("Inserting %o into composition", libItem);
-                    libItem ?? onInsertItem(libItem);
+                    if (libItem) onInsertItem(libItem);
                 }
                 return (
                     <Button onClick={handleClick}>
@@ -69,7 +69,14 @@ export function PromptLibrary(props: SimpleDialogProps) {
     }));
 
     return (
-        <Dialog className="prompt-library-dialog" onClose={handleClose} open={open}>
+        <Dialog
+            hideBackdrop
+            disableEnforceFocus
+            style={{ position: "initial", top: "30%", left: "30%", height: "fit-content", width: "fit-content" }}
+            className="prompt-library-dialog"
+            onClose={handleClose}
+            open={open}
+        >
             <DialogTitle>Prompt Library</DialogTitle>
             <div>
                 <DataGrid rows={rows} columns={columns} />

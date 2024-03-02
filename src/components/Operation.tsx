@@ -1,13 +1,14 @@
-import { Menu, MenuItem } from "@material-ui/core";
+import { Button, Menu, MenuItem } from "@material-ui/core";
 import React, { Children, DragEvent, ReactNode, useEffect } from 'react';
 import "./Operation.css";
 import { Op } from "../lib/operator";
 import { v4 as randomUUID } from "uuid";
-import { $composition, Operation as OperationType, changeOperationOp } from "../lib/prompt";
+import { $composition, Operation as OperationType, changeOperationOp, togglePromptItemMute } from "../lib/prompt";
 import Nugget from "./Nugget";
 import { PromptItemProps } from "./PromptItem";
 import { useStore } from "@nanostores/react";
 import { $sourceItem, cancelDrop, completeDrop, startHoverOver } from "../store/prompt-dnd";
+import { VolumeUp, VolumeOff } from "@mui/icons-material";
 
 interface OperationProps extends PromptItemProps {
   operation: OperationType
@@ -84,6 +85,16 @@ function Operation(props: OperationProps) {
     handleClose();
   }
 
+
+  const className = [...(operation.muted === true ? ["muted"] : []), ...[
+    "operation",
+    operation.op,
+    "prompt-item",
+  ]].join(" ");
+
+  console.log("operation classname: %s", className);
+
+
   return (
     <div
       draggable
@@ -92,7 +103,7 @@ function Operation(props: OperationProps) {
       onDragOver={handleOnDragOver}
       onMouseEnter={handleOnMouseEnter}
       onMouseOut={handleOnMouseLeave}
-      className={`operation ${operation.op} prompt-item`}
+      className={className}
       onContextMenu={handleContextMenu}
       data-promptitem-id={operation.id}
     >
@@ -104,6 +115,11 @@ function Operation(props: OperationProps) {
           })
         }
       </div>
+      <span className='hide'>
+        <Button onClick={() => togglePromptItemMute(operation.id)}>
+          {operation.muted ? <VolumeUp /> : <VolumeOff />}
+        </Button>
+      </span>
       <Menu
         open={contextMenu !== null}
         onClose={handleClose}

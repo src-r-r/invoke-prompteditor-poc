@@ -1,6 +1,6 @@
 import { v4 as randomUUID, v4 as uuidv4 } from "uuid";
 import { Op } from "./operator";
-import { atom, computed } from "nanostores";
+import { Atom, ReadableAtom, Store, WritableAtom, atom, computed } from "nanostores";
 
 type Id = string;
 
@@ -16,7 +16,7 @@ export enum Category {
     medium = "medium",
 }
 
-export function categoryHasName(cat : Category) {
+export function categoryHasName(cat: Category) {
     return (cat === Category.style || cat === Category.vibes)
 }
 
@@ -35,12 +35,16 @@ export type LibraryItem = {
 
 export type Library = Array<LibraryItem>;
 
-export type Nugget = IdAble & {
+export type Muteable = {
+    muted?: boolean,
+}
+
+export type Nugget = IdAble & Muteable & {
     item: LibraryItem,
     score: number,
 }
 
-export type Operation = IdAble & {
+export type Operation = IdAble & Muteable & {
     op: Op,
     items: Array<Nugget>
 }
@@ -74,7 +78,7 @@ export const $composition = atom<Composition>([])
 export function insertIntoComposition(item: LibraryItem) {
     $composition.set([
         ...$composition.get(),
-        { id: randomUUID(), item, score: 0 } as Nugget,
+        { item, id: randomUUID(), score: 0, muted: false } as Nugget,
     ]);
 }
 
@@ -84,10 +88,10 @@ export function removeFromComposition(item: PromptItem) {
     ]);
 }
 
-function nuggetDelta(nuggetId : Id, delta : number) {
+function nuggetDelta(nuggetId: Id, delta: number) {
     $composition.set($composition.get().map(item => {
         if ((item.id === nuggetId) && ("score" in item)) {
-            const o = {...item, score: item.score + delta};
+            const o = { ...item, score: item.score + delta };
             return o;
         }
         return item;
@@ -115,24 +119,25 @@ export function changeOperationOp(operationId: Id, op: Op) {
  * utility method to remove & return a prompt item by ID
  * @param id PromptItem ID
  */
-export function popPromptItem (id : Id) {
+export function popPromptItem(id: Id) {
     const found = $composition.get().find(item => item.id === id);
     $composition.set($composition.get().filter(item => item.id !== id));
     return found;
 }
 
 
-export function lassoNuggets (n1id : Id, n2id : Id, op : Op) {
+export function lassoNuggets(n1id: Id, n2id: Id, op: Op) {
     const n1 = popPromptItem(n1id);
     const n2 = popPromptItem(n2id);
     $composition.set([...$composition.get(), {
         id: uuidv4(),
         op,
         items: [n1, n2],
+        muted: false,
     } as Operation])
 }
 
-export function addToOperation(nId : Id, opId : Id) {
+export function addToOperation(nId: Id, opId: Id) {
     const comp = $composition.get();
     const nugget = comp.find(i => i.id === nId);
     $composition.set($composition.get().map(i => {
@@ -179,8 +184,8 @@ export function operationToText(operation: Operation): string {
 export const $textComposition = computed($composition, (composition) => {
     const JOINER = ", ";
     return composition.map(item => {
-        return "op" in item ? operationToText(item) : nuggetToText(item);
-    }).join(JOINER);
+        return item.muted ? null : ("op" in item ? operationToText(item) : nuggetToText(item));
+    }).filter(i => !!i).join(JOINER);
 });
 
 export type SlottedComposition = PromptItem[][];
@@ -212,3 +217,14 @@ export const $slottedComposition = computed($composition, (composition) => {
     })
     return slotted;
 });
+
+export function togglePromptItemMute(id: Id) {
+    $composition.set($composition.get().map(
+        c => {
+            return c.id === id ? {
+                ...c,
+                muted: !c.muted,
+            } : c;
+        }
+    ));
+}

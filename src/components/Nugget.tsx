@@ -2,12 +2,13 @@ import { Button, ButtonGroup, Chip, Divider } from '@material-ui/core';
 import React, { Component, DragEvent, useEffect, useState } from 'react';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowUp';
-import { $composition, Nugget as NuggetType, decreaseNuggetScore, increaseNuggetScore } from '../lib/prompt';
+import { $composition, Nugget as NuggetType, decreaseNuggetScore, increaseNuggetScore, togglePromptItemMute } from '../lib/prompt';
 import "./Nugget.css";
 import "./PromptItem.css"
 import { $sourceItem, cancelDrop, completeDrop, isPromptItemDropTarget, startDrag, startHoverOver } from '../store/prompt-dnd';
 import { PromptItemProps } from './PromptItem';
 import { useStore } from '@nanostores/react';
+import { VolumeMute, VolumeOff, VolumeUp } from '@mui/icons-material';
 
 export interface NuggetProps extends PromptItemProps {
     nugget: NuggetType,
@@ -28,7 +29,13 @@ export default function Nugget(props: NuggetProps) {
     const composition = useStore($composition)
     const thisId = `prompt-item-${nugget.id}`
 
-    const className = isTopLevel ? 'nugget toplevel prompt-item' : 'nugget child prompt-item';
+    const className = [...(nugget.muted === true ? ["muted"] : []), ...[
+        isTopLevel ? "toplevel" : "child",
+        "nugget",
+        "prompt-item",
+    ]].join(" ");
+
+    console.log("nugget classname: %s", className);
 
     const handleOnDragStart = () => {
         onDragStart ? onDragStart(nugget) : null;
@@ -89,6 +96,13 @@ export default function Nugget(props: NuggetProps) {
                     </Button>
                 </ButtonGroup>
             </span>
+            {isTopLevel &&
+                <span className='hide'>
+                    <Button onClick={() => togglePromptItemMute(nugget.id)}>
+                        {nugget.muted ?  <VolumeUp /> : <VolumeOff /> }
+                    </Button>
+                </span>
+            }
         </div>
     );
 }

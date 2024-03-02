@@ -2,6 +2,8 @@ import { Atom, atom, computed } from "nanostores"
 import { $composition, Nugget, Operation, PromptItem, addToOperation, itemIsNugget, itemIsOperation, lassoNuggets } from "../lib/prompt";
 import { Op } from "../lib/operator";
 
+export type DropCandidate = string | string []
+
 export type DragDropState = {
     currentSourceId?: string | null,
     currentDropCandidateId?: string | null,
