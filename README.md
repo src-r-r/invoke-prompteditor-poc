@@ -40,6 +40,11 @@ To change the *operator*, right click on the **Operation** and select a new one.
 - Operations cannot be grouped into other **Operation**s.
 - **Nugget**s must be grouped by category (e.g. "Vibes" can only be grouped with other "Vibes").
 
+#### Muting Nuggets and Operations
+
+If you don't want to use a nugget or operation in a prompt, you can mute it with the ![mute button](image-2.png) mute button.
+This will cause the output prompt to skip that specific part.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app),
